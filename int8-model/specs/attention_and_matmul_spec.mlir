@@ -358,7 +358,9 @@ module attributes { transform.with_named_sequence } {
     transform.memref.erase_dead_alloc_and_stores %func_8 : (!transform.any_op) -> ()
 
     // Apply chained matmul optimization.
+    // transform.print %func_8 : !transform.any_op
     %func_9 = transform.apply_registered_pass "iree-amdgpu-prepare-chained-matmul" to %func_8 : (!transform.any_op) -> (!transform.any_op)
+    // transform.print %func_9 : !transform.any_op
 
     %intrinsic = transform.param.constant #layout_f8 -> !transform.any_param
 
@@ -373,15 +375,17 @@ module attributes { transform.with_named_sequence } {
     transform.iree.set_contraction_layout_attributes %contract1, %intrinsic { read_layout_indices = array<i64: 0, 1> } : !transform.any_op, !transform.any_param
     transform.iree.set_contraction_layout_attributes %contract2, %intrinsic : !transform.any_op, !transform.any_param
 
+    // transform.print %variant_op : !transform.any_op
     %distribute_func = transform.structured.match ops{["func.func"]} in %variant_op : (!transform.any_op) -> !transform.any_op
-
     // transform.print %distribute_func : !transform.any_op
+
     %distribute_func_2 = transform.iree.amdgpu_distribute_vectors %distribute_func : (!transform.any_op) -> !transform.any_op
 
     transform.apply_patterns to %distribute_func_2 {
       transform.apply_patterns.canonicalization
     } : !transform.any_op
     transform.apply_cse to %distribute_func_2 : !transform.any_op
+    transform.print %distribute_func_2 : !transform.any_op
 
     // Distribute shared memory copies
     // ==========================================

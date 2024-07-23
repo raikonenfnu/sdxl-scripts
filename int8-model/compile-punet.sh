@@ -6,7 +6,8 @@ set -euo pipefail
 
 readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)"
 
-readonly IREE_COMPILE="$(which iree-compile)"
+# readonly IREE_COMPILE="$(which iree-compile)"
+readonly IREE_COMPILE=/home/stwinata/nod/iree-build-notrace/install/bin/iree-compile
 readonly CHIP="$1"
 WORKING_DIR=${WORKING_DIR:-${SCRIPT_DIR}}
 shift
@@ -26,7 +27,7 @@ rm -rf "${WORKING_DIR}/benchmarks/punet"
 
 "${SCRIPT_DIR}/compile-punet-base.sh" "$IREE_COMPILE" "$CHIP" \
   "${SCRIPT_DIR}/specs/${TRANSFORM_PREFIX}attention_and_matmul_spec.mlir" \
-  "${SCRIPT_DIR}/base_ir/punet_07_18.mlir" \
+  "${SCRIPT_DIR}/base_ir/sdxl_unet_fp16_export.mlir" \
   --iree-hal-dump-executable-configurations-to="${WORKING_DIR}/configurations/punet" \
   --iree-hal-dump-executable-sources-to="${WORKING_DIR}/sources/punet" \
   --iree-hal-dump-executable-binaries-to="${WORKING_DIR}/binaries/punet" \
